@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tính Protein & Calo</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: #f2f5f7;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #222;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .card h2 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+            width: 100%;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select {
+            display: block;
+            width: 100%;
+            height: 56px;
+            padding: 0 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            background: #fff;
+            font-size: 18px;
+            box-sizing: border-box;
+        }
+
+        .form-group select {
+            cursor: pointer;
+            appearance: auto;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        button {
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background: #2196f3;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1976d2;
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+            padding: 7px 12px;
+        }
+
+        .result {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .result-box {
+            background: #f8f9fa;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+        }
+
+        .result-box strong {
+            display: block;
+            font-size: 28px;
+            margin-top: 8px;
+            color: #2196f3;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background: #2196f3;
+            color: white;
+        }
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .summary-box {
+            padding: 20px;
+            background: #e3f2fd;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .summary-box h3 {
+            margin: 0;
+        }
+
+        .summary-box p {
+            font-size: 25px;
+            font-weight: bold;
+            color: #1976d2;
+        }
+
+        .success {
+            color: #2e7d32;
+            font-weight: bold;
+        }
+
+        .warning {
+            color: #d84315;
+            font-weight: bold;
+        }
+
+        @media (max-width: 700px) {
+
+            .result,
+            .summary {
+                grid-template-columns: 1fr;
+            }
+
+            body {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>🥗 TÍNH PROTEIN & CALO</h1>
+
+        <!-- THÔNG TIN CƠ THỂ -->
+        <div class="form-group">
+            <label>Thể trạng / Mục tiêu</label>
+
+            <select id="activityLevel">
+
+                <option value="0.8">
+                    Người ít vận động (0.8 - 1.0 g/kg)
+                </option>
+
+                <option value="1.2">
+                    Duy trì sức khỏe (1.2 - 1.5 g/kg)
+                </option>
+
+                <option value="1.6">
+                    Tăng cơ, Giảm Mỡ (1.6 - 2.0 g/kg)
+                </option>
+            </select>
+        </div>
+        <div class="card">
+
+            <h2>👤 Thông tin cơ thể</h2>
+
+            <div class="form-group">
+                <label>Cân nặng (kg)</label>
+                <input type="number" id="weight" placeholder="Ví dụ: 70">
+            </div>
+
+            <div class="form-group">
+                <label>Chiều cao (cm)</label>
+                <input type="number" id="height" placeholder="Ví dụ: 175">
+            </div>
+
+            <button class="btn-primary" onclick="calculateNeed()">
+                Tính nhu cầu
+            </button>
+
+            <div class="result">
+
+                <div class="result-box">
+                    Cân nặng
+                    <strong id="showWeight">0 kg</strong>
+                </div>
+
+                <div class="result-box">
+                    BMI
+                    <strong id="bmi">0</strong>
+                </div>
+
+                <div class="result-box">
+                    Protein cần/ngày
+                    <strong id="proteinNeed">0 g</strong>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- THÊM MÓN ĂN -->
+        <div class="card">
+
+            <h2>🍗 Thêm món ăn</h2>
+
+            <div class="form-group">
+
+                <label>Chọn món ăn</label>
+
+                <select id="food">
+
+                    <option value="com">
+                        Cơm trắng
+                    </option>
+
+                    <option value="ga">
+                        Ức gà
+                    </option>
+
+                    <option value="trung">
+                        Trứng gà
+                    </option>
+
+                    <option value="bo">
+                        Thịt bò
+                    </option>
+
+                    <option value="ca">
+                        Cá
+                    </option>
+
+                    <option value="ca_ngu">
+                        Cá ngừ
+                    </option>
+
+                    <option value="thit_heo">
+                        Thịt heo
+                    </option>
+
+                    <option value="sua">
+                        Sữa tươi
+                    </option>
+
+                    <option value="chuoi">
+                        Chuối
+                    </option>
+
+                    <option value="khoai">
+                        Khoai lang
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="form-group">
+
+                <label>Khối lượng (gram)</label>
+
+                <input type="number" id="grams" placeholder="Ví dụ: 200">
+
+            </div>
+
+            <button class="btn-primary" onclick="addFood()">
+                + Thêm món
+            </button>
+
+        </div>
+
+
+        <!-- DANH SÁCH MÓN -->
+        <div class="card">
+
+            <h2>🍽️ Thực phẩm đã ăn</h2>
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Món ăn</th>
+                        <th>Khối lượng</th>
+                        <th>Calo</th>
+                        <th>Protein</th>
+                        <th></th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="foodList">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- TỔNG -->
+        <div class="card">
+
+            <h2>📊 Tổng dinh dưỡng</h2>
+
+            <div class="summary">
+
+                <div class="summary-box">
+
+                    <h3>🔥 Tổng Calo</h3>
+
+                    <p>
+                        <span id="totalCalories">0</span> kcal
+                    </p>
+
+                </div>
+
+                <div class="summary-box">
+
+                    <h3>💪 Tổng Protein</h3>
+
+                    <p>
+                        <span id="totalProtein">0</span> g
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div id="status" style="margin-top:20px;text-align:center;"></div>
+
+        </div>
+
+
+        <button onclick="resetAll()" style="
+            width:100%;
+            background:#555;
+            color:white;
+        ">
+            🔄 Reset
+        </button>
+
+    </div>
+
+
+    <script>
+
+        /*
+            Dữ liệu dinh dưỡng
+            tính trên 100g thực phẩm
+    
+            calories = kcal
+            protein = gram
+        */
+
+        const foods = {
+
+            com: {
+                name: "Cơm trắng",
+                calories: 130,
+                protein: 2.7
+            },
+
+            ga: {
+                name: "Ức gà",
+                calories: 165,
+                protein: 31
+            },
+
+            trung: {
+                name: "Trứng gà",
+                calories: 155,
+                protein: 13
+            },
+
+            bo: {
+                name: "Thịt bò",
+                calories: 250,
+                protein: 26
+            },
+
+            ca: {
+                name: "Cá",
+                calories: 150,
+                protein: 22
+            },
+
+            ca_ngu: {
+                name: "Cá ngừ",
+                calories: 132,
+                protein: 28
+            },
+
+            thit_heo: {
+                name: "Thịt heo",
+                calories: 242,
+                protein: 27
+            },
+
+            sua: {
+                name: "Sữa tươi",
+                calories: 61,
+                protein: 3.2
+            },
+
+            chuoi: {
+                name: "Chuối",
+                calories: 89,
+                protein: 1.1
+            },
+
+            khoai: {
+                name: "Khoai lang",
+                calories: 86,
+                protein: 1.6
+            }
+
+        };
+
+
+        let totalCalories = 0;
+        let totalProtein = 0;
+
+        let proteinNeed = 0;
+
+
+        // =========================
+        // TÍNH NHU CẦU PROTEIN
+        // =========================
+
+        function calculateNeed() {
+
+            const weight =
+                Number(document.getElementById("weight").value);
+
+            const height =
+                Number(document.getElementById("height").value);
+
+            const activity =
+                Number(document.getElementById("activityLevel").value);
+
+
+            if (weight <= 0 || height <= 0) {
+
+                alert("Vui lòng nhập cân nặng và chiều cao!");
+
+                return;
+            }
+
+
+            /*
+                Công thức:
+    
+                Protein = cân nặng × 1.6
+    
+                1.6g/kg là mức tham khảo
+                cho người có hoạt động thể chất
+            */
+
+
+            const proteinNeed = weight * activity;
+
+
+            // BMI
+
+            const heightMeter = height / 100;
+
+            const bmi =
+                weight / (heightMeter * heightMeter);
+
+
+            document.getElementById("showWeight")
+                .innerText = weight + " kg";
+
+
+            document.getElementById("bmi")
+                .innerText = bmi.toFixed(1);
+
+
+            document.getElementById("proteinNeed")
+                .innerText = proteinNeed.toFixed(1) + " g";
+
+
+            updateStatus();
+        }
+
+
+        // =========================
+        // THÊM MÓN ĂN
+        // =========================
+
+        function addFood() {
+
+            const foodId =
+                document.getElementById("food").value;
+
+
+            const grams =
+                Number(document.getElementById("grams").value);
+
+
+            if (grams <= 0) {
+
+                alert("Vui lòng nhập khối lượng!");
+
+                return;
+            }
+
+
+            const food = foods[foodId];
+
+
+            /*
+                Ví dụ:
+    
+                200g ức gà
+    
+                Calories:
+    
+                165 / 100 × 200
+                = 330 kcal
+            */
+
+            const calories =
+                food.calories / 100 * grams;
+
+
+            const protein =
+                food.protein / 100 * grams;
+
+
+            totalCalories += calories;
+
+            totalProtein += protein;
+
+
+            // Tạo dòng mới
+
+            const row =
+                document.createElement("tr");
+
+
+            row.innerHTML = `
+
+            <td>${food.name}</td>
+
+            <td>${grams} g</td>
+
+            <td>${calories.toFixed(1)} kcal</td>
+
+            <td>${protein.toFixed(1)} g</td>
+
+            <td>
+                <button
+                    class="btn-danger"
+                    onclick="removeFood(this, ${calories}, ${protein})"
+                >
+                    Xóa
+                </button>
+            </td>
+
+        `;
+
+
+            document
+                .getElementById("foodList")
+                .appendChild(row);
+
+
+            updateTotal();
+
+
+            // Xóa input khối lượng
+
+            document.getElementById("grams").value = "";
+
+        }
+
+
+        // =========================
+        // XÓA MÓN
+        // =========================
+
+        function removeFood(
+            button,
+            calories,
+            protein
+        ) {
+
+            totalCalories -= calories;
+
+            totalProtein -= protein;
+
+
+            button
+                .parentElement
+                .parentElement
+                .remove();
+
+
+            updateTotal();
+
+        }
+
+
+        // =========================
+        // UPDATE TỔNG
+        // =========================
+
+        function updateTotal() {
+
+            document.getElementById("totalCalories")
+                .innerText =
+                totalCalories.toFixed(1);
+
+
+            document.getElementById("totalProtein")
+                .innerText =
+                totalProtein.toFixed(1);
+
+
+            updateStatus();
+
+        }
+
+
+        // =========================
+        // KIỂM TRA PROTEIN
+        // =========================
+
+        function updateStatus() {
+
+            const status =
+                document.getElementById("status");
+
+
+            if (proteinNeed <= 0) {
+
+                status.innerHTML =
+                    "Nhập thông tin cơ thể để tính mục tiêu protein.";
+
+                return;
+            }
+
+
+            const remaining =
+                proteinNeed - totalProtein;
+
+
+            if (remaining > 0) {
+
+                status.innerHTML = `
+
+                <span class="warning">
+
+                    ⚠️ Bạn còn thiếu
+                    ${remaining.toFixed(1)}g protein
+                    hôm nay.
+
+                </span>
+
+            `;
+
+            } else {
+
+                status.innerHTML = `
+
+                <span class="success">
+
+                    ✅ Bạn đã đạt mục tiêu protein!
+
+                </span>
+
+            `;
+
+            }
+
+        }
+
+
+        // =========================
+        // RESET
+        // =========================
+
+        function resetAll() {
+
+            totalCalories = 0;
+
+            totalProtein = 0;
+
+            proteinNeed = 0;
+
+
+            document.getElementById("weight").value = "";
+
+            document.getElementById("height").value = "";
+
+            document.getElementById("grams").value = "";
+
+
+            document.getElementById("showWeight")
+                .innerText = "0 kg";
+
+
+            document.getElementById("bmi")
+                .innerText = "0";
+
+
+            document.getElementById("proteinNeed")
+                .innerText = "0 g";
+
+
+            document.getElementById("totalCalories")
+                .innerText = "0";
+
+
+            document.getElementById("totalProtein")
+                .innerText = "0";
+
+
+            document.getElementById("foodList")
+                .innerHTML = "";
+
+
+            document.getElementById("status")
+                .innerHTML = "";
+
+        }
+
+    </script>
+
+</body>
+
+</html>
